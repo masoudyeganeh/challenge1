@@ -1,5 +1,6 @@
 package com.msy.wallet.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,11 +18,15 @@ import java.time.LocalDateTime;
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
+    @JsonIgnore
     private Long userId;
+    @JsonIgnore
     private Double amount;
     private String referenceId;
+    @JsonIgnore
     private LocalDateTime transactionDate = LocalDateTime.now();
 
     public Long getId() {

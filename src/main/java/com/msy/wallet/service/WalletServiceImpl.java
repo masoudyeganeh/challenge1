@@ -7,6 +7,7 @@ import com.msy.wallet.model.User;
 import com.msy.wallet.repository.TransactionRepository;
 import com.msy.wallet.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -29,8 +30,10 @@ public class WalletServiceImpl implements WalletService {
                 .orElseThrow(() -> new WalletServiceException(ErrorCode.USER_NOT_FOUND, userId));
     }
     @Override
-    public String addMoney(Long userId, Double amount) {
-        User user = userRepository.findById(userId).orElse(new User());
+    @Transactional
+    public Transaction addMoney(Long userId, Double amount) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new WalletServiceException(ErrorCode.USER_NOT_FOUND, userId));
         user.setBalance(user.getBalance() + amount);
         userRepository.save(user);
 
@@ -40,6 +43,6 @@ public class WalletServiceImpl implements WalletService {
         transaction.setReferenceId(UUID.randomUUID().toString());
         transactionRepository.save(transaction);
 
-        return transaction.getReferenceId();
+        return transaction;
     }
 }
