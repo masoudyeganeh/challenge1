@@ -1,0 +1,31 @@
+package com.msy.wallet.scheduler;
+
+import com.msy.wallet.repository.TransactionRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+
+@Component
+public class DailyTransactionScheduler {
+
+    private static final Logger log = LoggerFactory.getLogger(DailyTransactionScheduler.class);
+
+    @Autowired
+    private TransactionRepository transactionRepository;
+
+    @Scheduled(cron = "*/10 * * * * *")
+    public void calculateDailyTransactions() {
+        LocalDateTime start = LocalDateTime.now().minusDays(1);
+        LocalDateTime end = LocalDateTime.now();
+        Double total = transactionRepository.findByTransactionDateBetween(start, end)
+                .stream()
+                .mapToDouble(transaction -> transaction.getAmount())
+                .sum();
+        log.info("Total transactions amount: {}", total);
+    }
+}

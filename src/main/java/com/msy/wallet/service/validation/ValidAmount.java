@@ -1,22 +1,20 @@
 package com.msy.wallet.service.validation;
 
+import com.msy.wallet.exception.ErrorCode;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
+@Documented
+@Constraint(validatedBy = ValidAmountValidator.class)
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {})
-@NotNull(message = "User ID cannot be null")
-@Min(value = 1, message = "User ID must be a positive number")
-public @interface ValidUserId {
-    String message() default "Invalid user ID";
+public @interface ValidAmount {
+    ErrorCode errorCode() default ErrorCode.Amount_MUST_BE_GREATOR_THAN_ZERO;
+    String message() default "{errorCode}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
