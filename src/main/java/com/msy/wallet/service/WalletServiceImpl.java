@@ -7,7 +7,6 @@ import com.msy.wallet.model.User;
 import com.msy.wallet.repository.TransactionRepository;
 import com.msy.wallet.repository.UserRepository;
 import com.msy.wallet.scheduler.DailyTransactionScheduler;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -41,7 +40,7 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     @Transactional
-    public Transaction addMoney(Long userId, String amount) {
+    public Transaction addMoney(Long userId, Double amount) {
         log.debug("Entering addMoney for userId: {} with amount: {}", userId, amount);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> {
@@ -51,14 +50,13 @@ public class WalletServiceImpl implements WalletService {
 
         log.info("Current balance for userId: {} is: {}", userId, user.getBalance());
 
-        user.setBalance(user.getBalance() + Double.parseDouble(amount));
+        user.setBalance(user.getBalance() + amount);
         userRepository.save(user);
         log.info("Updated balance for userId: {} is now: {}", userId, user.getBalance());
 
-        // Create and save the transaction
         Transaction transaction = new Transaction();
         transaction.setUserId(userId);
-        transaction.setAmount(Double.valueOf(amount));
+        transaction.setAmount(amount);
         transaction.setReferenceId(UUID.randomUUID().toString());
         transactionRepository.save(transaction);
 

@@ -2,9 +2,8 @@ package com.msy.wallet.exception;
 
 public enum ErrorCode {
     USER_NOT_FOUND(1001, "User not found with ID: %s"),
-    INSUFFICIENT_BALANCE(1003, "Insufficient balance for user ID: %s"),
-    Amount_MUST_BE_GREATOR_THAN_ZERO(1004, "Amount must be greater than 0"),
-    AMOUNT_REQUIRED(1005, "Amount cannot be null");
+    PARAMETER_IS_REQUIRED(1002, "%s is required"),
+    INVALID_INPUT(1003, "Invalid value for parameter %s . Expected type: %s");
 
     private final int code;
     private final String message;

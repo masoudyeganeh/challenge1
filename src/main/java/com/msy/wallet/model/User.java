@@ -2,14 +2,9 @@ package com.msy.wallet.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
-@Table(name = "User")
-@Entity(name = "User")
-@Getter
-@Setter
+@Table(name = "Users")
+@Entity(name = "Users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
