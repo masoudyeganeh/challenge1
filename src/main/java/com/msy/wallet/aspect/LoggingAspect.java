@@ -37,18 +37,18 @@ public class LoggingAspect {
         String httpMethod = request.getMethod();
         Object[] args = joinPoint.getArgs();
 
-        logger.info("➡️  Request [{}] {} - {}.{} | Params: {}", httpMethod, requestUri, className, methodName, Arrays.toString(args));
+        logger.info("Request [{}] {} - {}.{} | Params: {}", httpMethod, requestUri, className, methodName, Arrays.toString(args));
 
         Object response;
         try {
-            response = joinPoint.proceed(); // Execute the actual method
+            response = joinPoint.proceed();
             long duration = System.currentTimeMillis() - startTime;
-            logger.info("✅ Response [{}] {} - {}.{} | Duration: {}ms | Result: {}", httpMethod, requestUri, className, methodName, duration, response);
+            logger.info("Response [{}] {} - {}.{} | Duration: {}ms | Result: {}", httpMethod, requestUri, className, methodName, duration, response);
             return response;
         } catch (Exception ex) {
             long duration = System.currentTimeMillis() - startTime;
-            logger.error("❌ Error [{}] {} - {}.{} | Duration: {}ms | Exception: {}", httpMethod, requestUri, className, methodName, duration, ex.getMessage(), ex);
-            throw ex; // Ensure the exception is still thrown
+            logger.error("Error [{}] {} - {}.{} | Duration: {}ms | Exception: {}", httpMethod, requestUri, className, methodName, duration, ex.getMessage(), ex);
+            throw ex;
         }
     }
 }

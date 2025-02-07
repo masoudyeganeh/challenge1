@@ -7,12 +7,11 @@ import com.msy.wallet.model.User;
 import com.msy.wallet.repository.TransactionRepository;
 import com.msy.wallet.repository.UserRepository;
 import com.msy.wallet.scheduler.DailyTransactionScheduler;
+import com.msy.wallet.util.ReferenceIdGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Service
 public class WalletServiceImpl implements WalletService {
@@ -21,9 +20,12 @@ public class WalletServiceImpl implements WalletService {
     private final UserRepository userRepository;
     private final TransactionRepository transactionRepository;
 
-    public WalletServiceImpl(UserRepository userRepository, TransactionRepository transactionRepository) {
+    private final ReferenceIdGenerator referenceIdGenerator;
+
+    public WalletServiceImpl(UserRepository userRepository, TransactionRepository transactionRepository, ReferenceIdGenerator referenceIdGenerator) {
         this.userRepository = userRepository;
         this.transactionRepository = transactionRepository;
+        this.referenceIdGenerator = referenceIdGenerator;
     }
 
     @Override
@@ -40,7 +42,7 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     @Transactional
-    public Transaction addMoney(Long userId, Double amount) {
+    public Transaction addMoney(Long userId, Long amount) {
         log.debug("Entering addMoney for userId: {} with amount: {}", userId, amount);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> {
@@ -50,14 +52,18 @@ public class WalletServiceImpl implements WalletService {
 
         log.info("Current balance for userId: {} is: {}", userId, user.getBalance());
 
+        if(user.getBalance() + amount < 0) {
+            throw new WalletServiceException(ErrorCode.INSUFFICIENT_BALANCE);
+        }
+
         user.setBalance(user.getBalance() + amount);
         userRepository.save(user);
         log.info("Updated balance for userId: {} is now: {}", userId, user.getBalance());
 
-        Transaction transaction = new Transaction();
-        transaction.setUserId(userId);
-        transaction.setAmount(amount);
-        transaction.setReferenceId(UUID.randomUUID().toString());
+        Transaction transaction = new Transaction()
+                .setUser(user)
+                .setAmount(amount)
+                .setReferenceId(referenceIdGenerator.generateReferenceId());
         transactionRepository.save(transaction);
 
         log.info("Transaction created for userId: {} with amount: {} and referenceId: {}", userId, amount, transaction.getReferenceId());

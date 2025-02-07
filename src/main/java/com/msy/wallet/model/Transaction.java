@@ -13,10 +13,12 @@ public class Transaction {
     @JsonIgnore
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "userId", nullable = false)
     @JsonIgnore
-    private Long userId;
+    private User user;
     @JsonIgnore
-    private Double amount;
+    private Long amount;
     private String referenceId;
     @JsonIgnore
     private LocalDateTime transactionDate = LocalDateTime.now();
@@ -30,20 +32,20 @@ public class Transaction {
         return this;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public Transaction setUserId(Long userId) {
-        this.userId = userId;
+    public Transaction setUser(User user) {
+        this.user = user;
         return this;
     }
 
-    public Double getAmount() {
+    public Long getAmount() {
         return amount;
     }
 
-    public Transaction setAmount(Double amount) {
+    public Transaction setAmount(Long amount) {
         this.amount = amount;
         return this;
     }

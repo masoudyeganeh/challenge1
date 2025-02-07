@@ -32,7 +32,7 @@ public class ExceptionLoggingAspect {
         String requestUri = request.getRequestURI();
         String httpMethod = request.getMethod();
 
-        logger.error("⚠️  Handled Exception [{}] {} - {}.{} | Response: {}", httpMethod, requestUri, className, methodName, response);
+        logger.error("Handled Exception [{}] {} - {}.{} | Response: {}", httpMethod, requestUri, className, methodName, response);
     }
 }
 

@@ -7,5 +7,5 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
-    List<Transaction> findByTransactionDateBetween(LocalDateTime start, LocalDateTime end);
+    List<Transaction> findTransactionsByTransactionDateIsLessThanEqual(LocalDateTime time);
 }

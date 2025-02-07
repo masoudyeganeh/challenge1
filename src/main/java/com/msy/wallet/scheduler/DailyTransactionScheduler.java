@@ -1,5 +1,6 @@
 package com.msy.wallet.scheduler;
 
+import com.msy.wallet.model.Transaction;
 import com.msy.wallet.repository.TransactionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,13 +18,13 @@ public class DailyTransactionScheduler {
     @Autowired
     private TransactionRepository transactionRepository;
 
-    @Scheduled(cron = "*/10 * * * * *")
+//    @Scheduled(cron = "*/10 * * * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void calculateDailyTransactions() {
-        LocalDateTime start = LocalDateTime.now().minusDays(1);
-        LocalDateTime end = LocalDateTime.now();
-        Double total = transactionRepository.findByTransactionDateBetween(start, end)
+        LocalDateTime time = LocalDateTime.now();
+        Long total = transactionRepository.findTransactionsByTransactionDateIsLessThanEqual(time)
                 .stream()
-                .mapToDouble(transaction -> transaction.getAmount())
+                .mapToLong(Transaction::getAmount)
                 .sum();
         log.info("Total transactions amount: {}", total);
     }
