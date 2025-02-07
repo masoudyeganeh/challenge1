@@ -5,7 +5,9 @@ public enum ErrorCode {
     PARAMETER_IS_REQUIRED(1002, "%s is required"),
     INVALID_INPUT(1003, "Invalid value for parameter %s . Expected type: %s"),
 
-    INSUFFICIENT_BALANCE(1004, "Insufficient balance");
+    INSUFFICIENT_BALANCE(1004, "Insufficient balance"),
+
+    OptimisticLockException(1005, "Balance is modified by another user. Please try again!");
 
     private final int code;
     private final String message;

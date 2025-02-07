@@ -8,8 +8,10 @@ import com.msy.wallet.repository.TransactionRepository;
 import com.msy.wallet.repository.UserRepository;
 import com.msy.wallet.scheduler.DailyTransactionScheduler;
 import com.msy.wallet.util.ReferenceIdGenerator;
+import jakarta.persistence.OptimisticLockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,30 +46,34 @@ public class WalletServiceImpl implements WalletService {
     @Transactional
     public Transaction addMoney(Long userId, Long amount) {
         log.debug("Entering addMoney for userId: {} with amount: {}", userId, amount);
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> {
-                    log.error("User not found for userId: {}", userId);
-                    return new WalletServiceException(ErrorCode.USER_NOT_FOUND, userId);
-                });
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> {
+                        log.error("User not found for userId: {}", userId);
+                        return new WalletServiceException(ErrorCode.USER_NOT_FOUND, userId);
+                    });
 
-        log.info("Current balance for userId: {} is: {}", userId, user.getBalance());
+            log.info("Current balance for userId: {} is: {}", userId, user.getBalance());
 
-        if(user.getBalance() + amount < 0) {
-            throw new WalletServiceException(ErrorCode.INSUFFICIENT_BALANCE);
+            if (user.getBalance() + amount < 0) {
+                throw new WalletServiceException(ErrorCode.INSUFFICIENT_BALANCE);
+            }
+
+            user.setBalance(user.getBalance() + amount);
+            userRepository.save(user);
+            log.info("Updated balance for userId: {} is now: {}", userId, user.getBalance());
+
+            Transaction transaction = new Transaction()
+                    .setUser(user)
+                    .setAmount(amount)
+                    .setReferenceId(referenceIdGenerator.generateReferenceId());
+            transactionRepository.save(transaction);
+
+            log.info("Transaction created for userId: {} with amount: {} and referenceId: {}", userId, amount, transaction.getReferenceId());
+
+            return transaction;
+        } catch (ObjectOptimisticLockingFailureException | OptimisticLockException e) {
+            throw new WalletServiceException(ErrorCode.OptimisticLockException);
         }
-
-        user.setBalance(user.getBalance() + amount);
-        userRepository.save(user);
-        log.info("Updated balance for userId: {} is now: {}", userId, user.getBalance());
-
-        Transaction transaction = new Transaction()
-                .setUser(user)
-                .setAmount(amount)
-                .setReferenceId(referenceIdGenerator.generateReferenceId());
-        transactionRepository.save(transaction);
-
-        log.info("Transaction created for userId: {} with amount: {} and referenceId: {}", userId, amount, transaction.getReferenceId());
-
-        return transaction;
     }
 }
