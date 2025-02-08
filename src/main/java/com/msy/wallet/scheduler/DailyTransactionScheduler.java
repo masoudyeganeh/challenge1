@@ -18,8 +18,7 @@ public class DailyTransactionScheduler {
     @Autowired
     private TransactionRepository transactionRepository;
 
-//    @Scheduled(cron = "*/10 * * * * *")
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 0 * * *") //runs every day at 00:00
     public void calculateDailyTransactions() {
         LocalDateTime time = LocalDateTime.now();
         Long total = transactionRepository.findTransactionsByTransactionDateIsLessThanEqual(time)

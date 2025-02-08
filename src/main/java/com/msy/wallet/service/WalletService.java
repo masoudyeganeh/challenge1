@@ -7,4 +7,5 @@ import com.msy.wallet.model.User;
 public interface WalletService {
     User getBalance(Long userId) throws WalletServiceException;;
     Transaction addMoney(Long userId, Long amount);
+    Transaction saveTransactions(User user, Long amount);
 }
