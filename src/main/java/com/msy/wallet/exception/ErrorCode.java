@@ -7,7 +7,11 @@ public enum ErrorCode {
 
     INSUFFICIENT_BALANCE(1004, "Insufficient balance"),
 
-    OptimisticLockException(1005, "Balance is modified by another user. Please try again!");
+    OptimisticLockException(1005, "Balance is modified by another user. Please try again!"),
+
+    UNEXPECTED_ERROR(1006, "An unexpected error has occured. Please try again!"),
+
+    ZERO_AMOUNT_NOT_ALLOWED(1007, "Amount should be greater than 0");
 
     private final int code;
     private final String message;

@@ -27,7 +27,7 @@ public class WalletController {
     @PostMapping("/addMoney")
     public ResponseEntity<Transaction> addMoney(@RequestParam Long userId,
                                                 @RequestParam Long amount) {
-        Transaction transaction = walletService.addMoney(userId, amount);
-        return ResponseEntity.ok(transaction);
+            Transaction transaction = walletService.addMoney(userId, amount);
+            return ResponseEntity.ok(transaction);
     }
 }
