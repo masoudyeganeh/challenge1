@@ -72,7 +72,6 @@ public class WalletController {
             roleRepository.save(userRole);
         }
 
-        user.setRoles(Collections.singleton(userRole));
         userRepository.save(user);
 
         return "User registered successfully!";

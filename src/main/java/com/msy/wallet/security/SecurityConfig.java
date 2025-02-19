@@ -31,8 +31,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/wallet/admin").hasRole("ADMIN")
-                        .requestMatchers("/wallet/user").hasRole("USER")
+                        .requestMatchers("/wallet").hasRole("USER")
                         .requestMatchers("/wallet/public", "/wallet/auth/login", "/wallet/auth/register").permitAll()
                         .anyRequest().authenticated()
                 )

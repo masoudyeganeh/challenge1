@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,21 +31,13 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         String token = request.getHeader("Authorization");
+
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7);
-            String username = jwtUtil.extractUsername(token);
-            List<String> roles = jwtUtil.extractRoles(token);
-
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                List<SimpleGrantedAuthority> authorities = roles.stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
-
-                User user = new User().setPassword("").setUsername(username);
-                UserDetails userDetails = (UserDetails) user;
-                UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
-                SecurityContextHolder.getContext().setAuthentication(auth);
+            if (JwtUtil.validateToken(token)) {
+                String username = JwtUtil.extractUsername(token);
+                User user = new User(username, "");
+                SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));
             }
         }
         chain.doFilter(request, response);

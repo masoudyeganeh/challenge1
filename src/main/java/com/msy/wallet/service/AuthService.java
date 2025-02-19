@@ -27,10 +27,7 @@ public class AuthService {
     public String authenticate(String username, String password) {
         Optional<User> user = userRepository.findByUsername(username);
         if (user.isPresent() && passwordEncoder.matches(password, user.get().getPassword())) {
-            List<GrantedAuthority> authorities = user.get().getRoles().stream()
-                    .map(role -> (GrantedAuthority) () -> "ROLE_" + role.getName())
-                    .collect(Collectors.toList());
-            return jwtUtil.generateToken(username, authorities);
+            return jwtUtil.generateToken(username);
         }
         throw new RuntimeException("Invalid credentials");
     }
